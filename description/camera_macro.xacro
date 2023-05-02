@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="camera" params="camera_joint link_name camera_optical_joint camera_link_optical sensor_name camera_controller angle x">
+        <joint name="${camera_joint}" type="fixed">
+            <parent link="chassis"/>
+            <child link="${link_name}"/>
+            <origin xyz="${x} 0 0.181" rpy="0 0.18 ${angle}"/>
+        </joint>
+
+        <link name="${link_name}">
+            <visual>
+                <geometry>
+                    <box size="0.010 0.03 0.03"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <visual>
+                <origin xyz="0 0 -0.05"/>
+                <geometry>
+                    <cylinder radius="0.002" length="0.1"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+        </link>
+        <joint name="${camera_optical_joint}" type="fixed">
+            <parent link="${link_name}"/>
+            <child link="${camera_optical_joint}"/>
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+        </joint>
+
+        <link name="${camera_optical_joint}"></link>
+        <gazebo reference="${link_name}">
+            <material>Gazebo/Black</material>
+
+            <sensor name="${sensor_name}" type="camera">
+                <pose> 0 0 0 0 0 0 </pose>
+                <visualize>false</visualize>
+                <update_rate>10</update_rate>
+                <camera>
+                    <horizontal_fov>1.089</horizontal_fov>
+                    <image>
+                        <format>R8G8B8</format>
+                        <width>640</width>
+                        <height>480</height>
+                    </image>
+                    <clip>
+                        <near>0.05</near>
+                        <far>8.0</far>
+                    </clip>
+                </camera>
+                <plugin name="${camera_controller}" filename="libgazebo_ros_camera.so">
+                    <frame_name>${camera_link_optical}</frame_name>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>
